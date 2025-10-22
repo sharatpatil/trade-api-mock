@@ -63,5 +63,4 @@ test_results/
 # Uploaded or generated files
 # =========================
 uploads/
-data/
 public/uploads/
