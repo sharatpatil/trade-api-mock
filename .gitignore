@@ -1,0 +1,67 @@
+# =========================
+# Node.js & npm
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# =========================
+# Environment files
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+*.log.*
+debug.log
+
+# =========================
+# Build / Dist
+# =========================
+dist/
+build/
+.tmp/
+.cache/
+coverage/
+
+# =========================
+# Editor / OS files
+# =========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# Test / Mock data
+# =========================
+__tests__/
+mock_data/
+test_results/
+*.test.js
+*.spec.js
+
+# =========================
+# Local exports / Postman / Temp
+# =========================
+*.postman_collection.json
+*.postman_environment.json
+*.bak
+*.tmp
+
+# =========================
+# Uploaded or generated files
+# =========================
+uploads/
+data/
+public/uploads/
