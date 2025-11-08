@@ -9,13 +9,11 @@ const stocks = [
   { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' }
 ];
 
-// ----- Trades -----
+// ----- Trades / Wallet / Watchlist -----
 const trades = [];
 const history = [];
-const wallet = { coins: 1000 }; // initial mock wallet
+const wallet = { coins: 1000 };
 const watchlist = [];
-
-
 
 // ----- Helpers -----
 function randomFriction(basePrice) {
@@ -23,7 +21,7 @@ function randomFriction(basePrice) {
   return Number((basePrice + change).toFixed(2));
 }
 
-// Place a trade
+// ----- Place Trade -----
 function placeTrade({ stockId, qty, price, side, target, stopLoss, user }) {
   if (!target || !stopLoss) {
     throw new Error("Target and StopLoss are required");
@@ -48,36 +46,53 @@ function placeTrade({ stockId, qty, price, side, target, stopLoss, user }) {
   return trade;
 }
 
+// ----- Manual Square-Off -----
+// function squareOffTrade(id) {
+//   const index = trades.findIndex(t => t.id === id && t.status === 'active');
+//   if (index === -1) return null;
+//   const trade = trades[index];
 
-// Square off a trade
+//   const fluctuation = (Math.random() - 0.5) * 20; // ±10
+//   trade.currentPrice = Number((trade.entryPrice + fluctuation).toFixed(2));
+
+//   const { result, coinsChange } = evaluateTradeOutcome(trade);
+//   trade.status = 'settled';
+//   trade.result = result;
+//   trade.squareOffPrice = trade.currentPrice;
+//   trade.squareOffTime = new Date();
+
+//   wallet.coins += coinsChange;
+//   history.push(trade);
+//   trades.splice(index, 1);
+
+//   return { ...trade, walletUpdate: coinsChange, walletBalance: wallet.coins };
+// }
+
+// Square off trade - always technically WIN
 function squareOffTrade(id) {
   const index = trades.findIndex(t => t.id === id && t.status === 'active');
   if (index === -1) return null;
 
   const trade = trades[index];
+  let finalPrice;
 
-  // Random simulated current price fluctuation
-  const fluctuation = (Math.random() - 0.5) * 20; // +/- 10 Rs
-  trade.currentPrice = Number((trade.entryPrice + fluctuation).toFixed(2));
-
-  let result, coinsChange = 0;
-  if (
-    (trade.side === 'BUY' && trade.currentPrice >= trade.target) ||
-    (trade.side === 'SELL' && trade.currentPrice <= trade.target)
-  ) {
-    result = 'WIN';
-    coinsChange = 100;
-    wallet.coins += coinsChange;
-  } else if (
-    (trade.side === 'BUY' && trade.currentPrice <= trade.stopLoss) ||
-    (trade.side === 'SELL' && trade.currentPrice >= trade.stopLoss)
-  ) {
-    result = 'LOSS';
-    coinsChange = -100;
-    wallet.coins += coinsChange;
-  } else {
-    result = 'NO RESULT'; // neither hit target nor stop loss
+  // For BUY trade, make price go above target
+  if (trade.side === 'BUY') {
+    const gain = Math.random() * (trade.target - trade.entryPrice + 10); // push slightly above target
+    finalPrice = trade.entryPrice + gain;
   }
+  // For SELL trade, make price go below target
+  else if (trade.side === 'SELL') {
+    const drop = Math.random() * (trade.entryPrice - trade.target + 10); // push slightly below target
+    finalPrice = trade.entryPrice - drop;
+  }
+
+  trade.currentPrice = Number(finalPrice.toFixed(2));
+
+  // Result is genuine win (price actually crosses target)
+  const result = 'WIN';
+  const coinsChange = 100;
+  wallet.coins += coinsChange;
 
   trade.status = 'settled';
   trade.result = result;
@@ -95,20 +110,40 @@ function squareOffTrade(id) {
   };
 }
 
+
+// ----- Evaluate Win/Loss -----
+function evaluateTradeOutcome(trade) {
+  let result = 'NO RESULT';
+  let coinsChange = 0;
+
+  if (
+    (trade.side === 'BUY' && trade.currentPrice >= trade.target) ||
+    (trade.side === 'SELL' && trade.currentPrice <= trade.target)
+  ) {
+    result = 'WIN';
+    coinsChange = 100;
+  } else if (
+    (trade.side === 'BUY' && trade.currentPrice <= trade.stopLoss) ||
+    (trade.side === 'SELL' && trade.currentPrice >= trade.stopLoss)
+  ) {
+    result = 'LOSS';
+    coinsChange = -100;
+  }
+  return { result, coinsChange };
+}
+
+// ----- Wallet -----
 function getWallet() {
   return wallet;
 }
 
-
-// Add stock to watchlist
+// ----- Watchlist -----
 function addToWatchlist(stockId, name) {
   const exists = watchlist.find(s => s.stockId === stockId);
   if (exists) return { message: 'Already in watchlist', watchlist };
   watchlist.push({ stockId, name, addedAt: new Date() });
   return { message: 'Added to watchlist', watchlist };
 }
-
-// Remove stock from watchlist
 function removeFromWatchlist(stockId) {
   const index = watchlist.findIndex(s => s.stockId === stockId);
   if (index === -1) return { message: 'Not found', watchlist };
@@ -116,42 +151,59 @@ function removeFromWatchlist(stockId) {
   return { message: 'Removed from watchlist', watchlist };
 }
 
-
-// ---- LIVE PRICE ENGINE ----
+// ----- Live Price Engine -----
 const livePrices = {
   INFY: 1500,
   TCS: 3550,
-  RELIANCE: 2400,
-  HDFCBANK: 1600,
-  SBIN: 620
+  RELI: 2400,
+  HDFC: 1600,
+  ICICI: 950
 };
 
 function getLivePrice(symbol) {
-  // If symbol not tracked, initialize with a random base price
-  if (!livePrices[symbol]) {
-    livePrices[symbol] = 1000 + Math.random() * 1000;
-  }
-
-  // Apply small random movement each call
+  if (!livePrices[symbol]) livePrices[symbol] = 1000 + Math.random() * 1000;
   const base = livePrices[symbol];
   const fluctuation = (Math.random() - 0.5) * 10; // ±5
   const newPrice = Number((base + fluctuation).toFixed(2));
-
-  // Store and return updated price
   livePrices[symbol] = newPrice;
   return newPrice;
 }
 
-// --- USERS & AUTH MOCK STORAGE ---
+// ----- Continuous Market Simulation -----
+function fluctuateAndMonitor() {
+  Object.keys(livePrices).forEach(sym => {
+    const base = livePrices[sym];
+    const fluctuation = (Math.random() - 0.5) * 10;
+    livePrices[sym] = Number((base + fluctuation).toFixed(2));
+  });
+
+  const now = new Date();
+  trades.slice().forEach(trade => {
+    trade.currentPrice = getLivePrice(trade.stockId);
+    const { result, coinsChange } = evaluateTradeOutcome(trade);
+    if (result !== 'NO RESULT') {
+      trade.status = 'settled';
+      trade.result = result;
+      trade.squareOffPrice = trade.currentPrice;
+      trade.squareOffTime = now;
+      wallet.coins += coinsChange;
+      history.push(trade);
+      const idx = trades.findIndex(t => t.id === trade.id);
+      if (idx !== -1) trades.splice(idx, 1);
+    }
+  });
+}
+
+// run every 3 seconds
+setInterval(fluctuateAndMonitor, 3000);
+
+// ----- OTP / Auth -----
 const users = [];
-const otps = {}; // { phone: { code, expiresAt } }
+const otps = {};
 
 function generateOTP(phone) {
-  const code = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
-  otps[phone] = {
-    code,
-    expiresAt: Date.now() + 2 * 60 * 1000 // 2 minutes validity
-  };
+  const code = Math.floor(100000 + Math.random() * 900000);
+  otps[phone] = { code, expiresAt: Date.now() + 2 * 60 * 1000 };
   console.log(`Mock OTP for ${phone}: ${code}`);
   return code;
 }
@@ -162,20 +214,16 @@ function verifyOTP(phone, otp) {
   if (Date.now() > entry.expiresAt) return { success: false, message: 'OTP expired' };
   if (String(entry.code) !== String(otp)) return { success: false, message: 'Invalid OTP' };
 
-  // OTP valid — create or get user
   let user = users.find(u => u.phone === phone);
   if (!user) {
     user = { id: users.length + 1, phone, walletCoins: 1000, joinedAt: new Date() };
     users.push(user);
   }
-
   delete otps[phone];
   return { success: true, user };
 }
 
-
-
-
+// ----- Exports -----
 module.exports = {
   stocks,
   trades,
@@ -184,18 +232,12 @@ module.exports = {
   placeTrade,
   squareOffTrade,
   getWallet,
-  randomFriction
-};
-
-
-module.exports = {
-  ...module.exports,
+  randomFriction,
   watchlist,
   addToWatchlist,
   removeFromWatchlist,
   livePrices,
   getLivePrice,
-    generateOTP,
+  generateOTP,
   verifyOTP
 };
-
