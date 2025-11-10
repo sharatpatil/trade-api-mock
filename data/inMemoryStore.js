@@ -17,7 +17,7 @@ const watchlist = [];
 
 // ----- Helpers -----
 function randomFriction(basePrice) {
-  const change = (Math.random() - 0.5) * basePrice * 0.02; // ±2%
+  const change = (Math.random() - 0.5) * basePrice * 0.010; // ±2%
   return Number((basePrice + change).toFixed(2));
 }
 
@@ -69,46 +69,101 @@ function placeTrade({ stockId, qty, price, side, target, stopLoss, user }) {
 // }
 
 // Square off trade - always technically WIN
+// function squareOffTrade(id) {
+//   const index = trades.findIndex(t => t.id === id && t.status === 'active');
+//   if (index === -1) return null;
+
+//   const trade = trades[index];
+//   let finalPrice;
+
+//   // For BUY trade, make price go above target
+//   if (trade.side === 'BUY') {
+//     const gain = Math.random() * (trade.target - trade.entryPrice + 10); // push slightly above target
+//     finalPrice = trade.entryPrice + gain;
+//   }
+//   // For SELL trade, make price go below target
+//   else if (trade.side === 'SELL') {
+//     const drop = Math.random() * (trade.entryPrice - trade.target + 10); // push slightly below target
+//     finalPrice = trade.entryPrice - drop;
+//   }
+
+//   trade.currentPrice = Number(finalPrice.toFixed(2));
+
+//   // Result is genuine win (price actually crosses target)
+//   const result = 'WIN';
+//   const coinsChange = 100;
+//   wallet.coins += coinsChange;
+
+//   trade.status = 'settled';
+//   trade.result = result;
+//   trade.squareOffPrice = trade.currentPrice;
+//   trade.squareOffTime = new Date();
+
+//   // move to history
+//   history.push(trade);
+//   trades.splice(index, 1);
+
+//   return {
+//     ...trade,
+//     walletUpdate: coinsChange,
+//     walletBalance: wallet.coins
+//   };
+// }
+
+
 function squareOffTrade(id) {
+
+ 
   const index = trades.findIndex(t => t.id === id && t.status === 'active');
   if (index === -1) return null;
 
   const trade = trades[index];
-  let finalPrice;
 
-  // For BUY trade, make price go above target
-  if (trade.side === 'BUY') {
-    const gain = Math.random() * (trade.target - trade.entryPrice + 10); // push slightly above target
-    finalPrice = trade.entryPrice + gain;
-  }
-  // For SELL trade, make price go below target
-  else if (trade.side === 'SELL') {
-    const drop = Math.random() * (trade.entryPrice - trade.target + 10); // push slightly below target
-    finalPrice = trade.entryPrice - drop;
+  // Deduct 200 coins margin once (if not already done)
+  if (!trade.marginDeducted) {
+    wallet.coins -= 200;
+    trade.marginDeducted = true;
   }
 
-  trade.currentPrice = Number(finalPrice.toFixed(2));
+  // Simulate 10 large fluctuations (±10%)
+  let price = trade.entryPrice;
+  for (let i = 0; i < 10; i++) {
+    const change = (Math.random() - 0.5) * price * 0.1; // ±10%
+    price = Number((price + change).toFixed(2));
+  }
+  trade.currentPrice = price;
 
-  // Result is genuine win (price actually crosses target)
-  const result = 'WIN';
-  const coinsChange = 100;
+  // --- COIN UPDATE PURELY BY PRICE DIFFERENCE ---
+  const priceDiff = trade.currentPrice - trade.entryPrice;
+  let coinsChange = Math.round(priceDiff);
+
+ 
+  // For SELL trades, reverse difference direction
+  if (trade.side === 'SELL') {
+    coinsChange = Math.round(-priceDiff);
+  }
+
+  // Update wallet
   wallet.coins += coinsChange;
 
+  // Finalize trade
   trade.status = 'settled';
-  trade.result = result;
   trade.squareOffPrice = trade.currentPrice;
   trade.squareOffTime = new Date();
 
-  // move to history
+  // Move trade to history
   history.push(trade);
   trades.splice(index, 1);
 
+  
+
   return {
     ...trade,
-    walletUpdate: coinsChange,
+    walletChange: coinsChange,
     walletBalance: wallet.coins
   };
 }
+
 
 
 // ----- Evaluate Win/Loss -----
@@ -163,7 +218,7 @@ const livePrices = {
 function getLivePrice(symbol) {
   if (!livePrices[symbol]) livePrices[symbol] = 1000 + Math.random() * 1000;
   const base = livePrices[symbol];
-  const fluctuation = (Math.random() - 0.5) * 10; // ±5
+  const fluctuation = (Math.random() - 0.50) * 10; // ±5
   const newPrice = Number((base + fluctuation).toFixed(2));
   livePrices[symbol] = newPrice;
   return newPrice;
