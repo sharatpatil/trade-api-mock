@@ -7,6 +7,7 @@ const realtimeRouter = require('./routes/realtime');
 const walletRouter = require('./routes/wallet');
 const watchlistRoutes = require('./routes/watchlist');
 const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
 
 
 
@@ -21,6 +22,7 @@ app.use('/api/realtime', realtimeRouter);
 app.use('/api/wallet', walletRouter);
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
 
 
 // health
