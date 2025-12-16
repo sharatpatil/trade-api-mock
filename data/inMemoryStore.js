@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 --------------------------------------------------------- */
 const stocks = [
     {
-    stockId: 'NIFTY',
+    id: 'NIFTY',
     name: 'NIFTY 50',
     exchange: 'NSE',
     price: 19500.00,
@@ -13,17 +13,17 @@ const stocks = [
   },
   
   {
-    stockId: 'GOLD',
+    id: 'GOLD',
     name: 'Gold Futures',
     exchange: 'MCX',
     price: 62000.00,
     sector: 'Commodity'
   },
-  { stockId: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
-  { stockId: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
-  { stockId: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
-  { stockId: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
-  { stockId: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' },
+  { id: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
+  { id: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
+  { id: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
+  { id: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
+  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' },
 
   
 
