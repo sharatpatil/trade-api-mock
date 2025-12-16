@@ -4,12 +4,31 @@ const { v4: uuidv4 } = require('uuid');
    STOCKS
 --------------------------------------------------------- */
 const stocks = [
+    {
+    id: 'NIFTY',
+    name: 'NIFTY 50',
+    exchange: 'NSE',
+    price: 19500.00,
+    sector: 'Index'
+  },
+  
+  {
+    id: 'GOLD',
+    name: 'Gold Futures',
+    exchange: 'MCX',
+    price: 62000.00,
+    sector: 'Commodity'
+  },
   { id: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
   { id: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
   { id: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
   { id: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
-  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' }
+  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' },
+
+  
+
 ];
+
 
 
 let userWatchlists = {
@@ -30,7 +49,9 @@ const livePrices = {
   TCS: 3550,
   RELI: 2400,
   HDFC: 1600,
-  ICICI: 950
+  ICICI: 950,
+  NIFTY:19500,
+  GOLD:62000
 };
 
 
