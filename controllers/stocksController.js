@@ -7,25 +7,39 @@ const { getLivePrice } = require('../data/inMemoryStore');
  * GET /api/stocks/popular
  * returns a small list of "popular" stocks (mock).
  */
-function getPopular(req, res) {
-  // const popular = [
-  //   { stockId: 'INFY', name: 'Infosys Ltd' },
-  //   { stockId: 'TCS', name: 'Tata Consultancy Services' },
-  //   { stockId: 'RELIANCE', name: 'Reliance Industries' },
-  //   { stockId: 'HDFCBANK', name: 'HDFC Bank' },
-  //   { stockId: 'SBIN', name: 'State Bank of India' }
-  // ].map(s => ({
-  //   ...s,
-  //   currentPrice: getLivePrice(s.stockId)
-  // }));
+// function getPopular(req, res) {
+//   // const popular = [
+//   //   { stockId: 'INFY', name: 'Infosys Ltd' },
+//   //   { stockId: 'TCS', name: 'Tata Consultancy Services' },
+//   //   { stockId: 'RELIANCE', name: 'Reliance Industries' },
+//   //   { stockId: 'HDFCBANK', name: 'HDFC Bank' },
+//   //   { stockId: 'SBIN', name: 'State Bank of India' }
+//   // ].map(s => ({
+//   //   ...s,
+//   //   currentPrice: getLivePrice(s.stockId)
+//   // }));
 
-    stocks.map(s => ({
+//     stocks.map(s => ({
+//     ...s,
+//     currentPrice: getLivePrice(s.stockId)
+//   }));
+
+//   res.json({ count: stocks.length, stocks: stocks, currentPrice:currentPrice });
+// }
+
+
+function getPopular(req, res) {
+  const popularStocks = stocks.map(s => ({
     ...s,
-    currentPrice: getLivePrice(s.stockId)
+    currentPrice: getLivePrice(s.id) // use stock id
   }));
 
-  res.json({ count: stocks.length, stocks: stocks });
+  res.json({
+    count: popularStocks.length,
+    stocks: popularStocks
+  });
 }
+
 
 
 /**
