@@ -96,6 +96,7 @@ function getBadgeLevel(coins) {
 }
 
 function getLivePrice(symbol) {
+  fluctuateAndMonitor()
   if (!livePrices[symbol]) livePrices[symbol] = 1000 + Math.random() * 1000;
 
   const base = livePrices[symbol];
@@ -131,6 +132,65 @@ function placeTrade(data) {
   trades.push(trade);
   return trade;
 }
+
+
+function fluctuateAndMonitor() {
+  const now = new Date();
+
+  trades.slice().forEach(trade => {
+    // update live price
+    trade.currentPrice = getLivePrice(trade.stockId);
+
+    let hitTarget = false;
+    let hitSL = false;
+
+    if (trade.side === "BUY") {
+      hitTarget = trade.currentPrice >= trade.target;
+      hitSL = trade.currentPrice <= trade.stopLoss;
+    } else {
+      hitTarget = trade.currentPrice <= trade.target;
+      hitSL = trade.currentPrice >= trade.stopLoss;
+    }
+
+    if (!hitTarget && !hitSL) return;
+
+    // -------- AUTO SQUARE OFF --------
+    trade.status = 'settled';
+    trade.squareOffPrice = trade.currentPrice;
+    trade.squareOffTime = now;
+
+    const diff = trade.squareOffPrice - trade.entryPrice;
+    let coins = Math.round(diff);
+    if (trade.side === "SELL") coins = -coins;
+
+    const bonus = 50;
+    const finalCoins = coins + bonus;
+
+    trade.coinsEarned = coins > 0 ? coins : 0;
+    trade.coinsLost = coins < 0 ? Math.abs(coins) : 0;
+    trade.bonus = bonus;
+    trade.totalCoinsChange = finalCoins;
+
+    // ---- USER WALLET UPDATE ----
+    const user = users.find(u => u.id === trade.userId);
+    if (user) {
+      user.walletCoins += finalCoins;
+      user.badgeLevel = getBadgeLevel(user.walletCoins);
+      user.stats.totalTrades += 1;
+
+      if (coins > 0) user.stats.wins += 1;
+      if (coins < 0) user.stats.losses += 1;
+
+      trade.walletBalance = user.walletCoins;
+    }
+
+    // move trade
+    const idx = trades.findIndex(t => t.id === trade.id);
+    if (idx !== -1) trades.splice(idx, 1);
+    history.push(trade);
+  });
+}
+
 
 
 /* ---------------------------------------------------------
