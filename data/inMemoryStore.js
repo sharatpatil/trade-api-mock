@@ -96,7 +96,7 @@ function getBadgeLevel(coins) {
 }
 
 function getLivePrice(symbol) {
-  fluctuateAndMonitor()
+
   if (!livePrices[symbol]) livePrices[symbol] = 1000 + Math.random() * 1000;
 
   const base = livePrices[symbol];
@@ -106,6 +106,8 @@ function getLivePrice(symbol) {
 
   return newPrice;
 }
+
+setInterval(fluctuateAndMonitor, 3000);
 
 
 /* ---------------------------------------------------------
