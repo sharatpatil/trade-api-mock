@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { getSheetPrice } = require('./priceFeed');
 
 /* ---------------------------------------------------------
    STOCKS
@@ -95,15 +96,42 @@ function getBadgeLevel(coins) {
   return 1;
 }
 
-function getLivePrice(symbol) {
+// function getLivePrice(symbol) {
 
-  if (!livePrices[symbol]) livePrices[symbol] = 1000 + Math.random() * 1000;
+//   if (!livePrices[symbol]) livePrices[symbol] = 1000 + Math.random() * 1000;
+
+//   const base = livePrices[symbol];
+//   const fluctuation = (Math.random() - 0.5) * 10;
+//   const newPrice = Number((base + fluctuation).toFixed(2));
+//   livePrices[symbol] = newPrice;
+
+//   return newPrice;
+// }
+
+
+function getLivePrice(symbol) {
+  symbol = symbol.toUpperCase();
+ 
+
+  // ✅ 1. SheetDB price (NIFTY / GOLD)
+  // 1️⃣ SheetDB prices (NIFTY / GOLD)
+  const sheetPrice = getSheetPrice(symbol);
+  // console.log(sheetPrice)
+  if (sheetPrice !== null) {
+    
+    return sheetPrice;
+  }
+
+  // ✅ 2. Simulated price for others
+  if (!livePrices[symbol]) {
+    livePrices[symbol] = 1000 + Math.random() * 1000;
+  }
 
   const base = livePrices[symbol];
   const fluctuation = (Math.random() - 0.5) * 10;
   const newPrice = Number((base + fluctuation).toFixed(2));
-  livePrices[symbol] = newPrice;
 
+  livePrices[symbol] = newPrice;
   return newPrice;
 }
 
