@@ -355,6 +355,25 @@ function removeFromWatchlist(userId, stockId) {
 }
 
 
+function getUserById(userId) {
+  return users.find(u => u.id === Number(userId));
+}
+
+function addCoinsToWallet(userId, coins) {
+  const user = getUserById(userId);
+  if (!user) return null;
+
+  user.walletCoins += coins;
+  user.badgeLevel = getBadgeLevel(user.walletCoins);
+
+  return {
+    userId: user.id,
+    walletCoins: user.walletCoins,
+    badgeLevel: user.badgeLevel
+  };
+}
+
+
 /* ---------------------------------------------------------
    EXPORTS
 --------------------------------------------------------- */
@@ -378,5 +397,8 @@ module.exports = {
   verifyOTP,
   getBadgeLevel,
   getWatchlistByUser,
+
+   getUserById,
+  addCoinsToWallet
   
 };
