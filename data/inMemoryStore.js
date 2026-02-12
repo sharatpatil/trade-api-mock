@@ -317,12 +317,15 @@ function fluctuateAndMonitor() {
 }
 
 function getTotalFloatingPnL(userId) {
-  return trades
+  const total = trades
     .filter(t => t.userId == userId && t.status === "active")
-    .reduce((total, trade) => {
-      return total + (Number(trade.floatingPnL) || 0);
+    .reduce((sum, trade) => {
+      return sum + (Number(trade.floatingPnL) || 0);
     }, 0);
+
+  return Math.round(total);
 }
+
 
 
 
