@@ -66,7 +66,9 @@ const users = [
     walletCoins: 950,
     badgeLevel: 1,
     joinedAt: new Date("2025-01-01"),
-    stats: { totalTrades: 0, wins: 0, losses: 0 }
+    stats: { totalTrades: 0, wins: 0, losses: 0 },
+    floatingPnL:0
+
   },
   {
     id: 2,
@@ -74,7 +76,8 @@ const users = [
     walletCoins: 1250,
     badgeLevel: 4,
     joinedAt: new Date("2025-01-02"),
-    stats: { totalTrades: 20, wins: 14, losses: 6 }
+    stats: { totalTrades: 20, wins: 14, losses: 6 },
+      floatingPnL:0
   }
 ];
 
@@ -164,13 +167,93 @@ function placeTrade(data) {
 }
 
 
+// function fluctuateAndMonitor() {
+//   const now = new Date();
+
+//   trades.slice().forEach(trade => {
+//     // update live price
+//     trade.currentPrice = getLivePrice(trade.stockId);
+
+//     let hitTarget = false;
+//     let hitSL = false;
+
+//     if (trade.side === "BUY") {
+//       hitTarget = trade.currentPrice >= trade.target;
+//       hitSL = trade.currentPrice <= trade.stopLoss;
+//     } else {
+//       hitTarget = trade.currentPrice <= trade.target;
+//       hitSL = trade.currentPrice >= trade.stopLoss;
+//     }
+
+//     if (!hitTarget && !hitSL) return;
+
+//     // -------- AUTO SQUARE OFF --------
+//     trade.status = 'settled';
+//     trade.squareOffPrice = trade.currentPrice;
+//     trade.squareOffTime = now;
+
+//     const diff = trade.squareOffPrice - trade.entryPrice;
+//     let coins = Math.round(diff);
+//     if (trade.side === "SELL") coins = -coins;
+
+//     const bonus = 50;
+//     const finalCoins = coins + bonus;
+
+//     trade.coinsEarned = coins > 0 ? coins : 0;
+//     trade.coinsLost = coins < 0 ? Math.abs(coins) : 0;
+//     trade.bonus = bonus;
+//     trade.totalCoinsChange = finalCoins;
+
+//     // ---- USER WALLET UPDATE ----
+//     const user = users.find(u => u.id === trade.userId);
+//     if (user) {
+//       user.walletCoins += finalCoins;
+//       user.badgeLevel = getBadgeLevel(user.walletCoins);
+//       user.stats.totalTrades += 1;
+
+//       if (coins > 0) user.stats.wins += 1;
+//       if (coins < 0) user.stats.losses += 1;
+
+//       trade.walletBalance = user.walletCoins;
+//     }
+
+//     // move trade
+//     const idx = trades.findIndex(t => t.id === trade.id);
+//     if (idx !== -1) trades.splice(idx, 1);
+//     history.push(trade);
+//   });
+// }
+
+
 function fluctuateAndMonitor() {
   const now = new Date();
 
   trades.slice().forEach(trade => {
-    // update live price
+
+    // -------------------------------------------------
+    // 1️⃣ Update Live Price
+    // -------------------------------------------------
     trade.currentPrice = getLivePrice(trade.stockId);
 
+    // -------------------------------------------------
+    // 2️⃣ Calculate Floating P&L (Real-time)
+    // -------------------------------------------------
+    const priceDiff = trade.currentPrice - trade.entryPrice;
+
+    let pnl = priceDiff * trade.qty;
+
+    if (trade.side === "SELL") {
+      pnl = -pnl;
+    }
+
+    trade.floatingPnL = Number(pnl.toFixed(2));
+    trade.pnlPercentage = Number(
+      ((priceDiff / trade.entryPrice) * 100).toFixed(2)
+    );
+
+    // -------------------------------------------------
+    // 3️⃣ Check Target / StopLoss
+    // -------------------------------------------------
     let hitTarget = false;
     let hitSL = false;
 
@@ -184,14 +267,20 @@ function fluctuateAndMonitor() {
 
     if (!hitTarget && !hitSL) return;
 
-    // -------- AUTO SQUARE OFF --------
+    // -------------------------------------------------
+    // 4️⃣ Auto Square Off
+    // -------------------------------------------------
     trade.status = 'settled';
     trade.squareOffPrice = trade.currentPrice;
     trade.squareOffTime = now;
 
-    const diff = trade.squareOffPrice - trade.entryPrice;
-    let coins = Math.round(diff);
-    if (trade.side === "SELL") coins = -coins;
+    const finalDiff = trade.squareOffPrice - trade.entryPrice;
+
+    let coins = Math.round(finalDiff * trade.qty);
+
+    if (trade.side === "SELL") {
+      coins = -coins;
+    }
 
     const bonus = 50;
     const finalCoins = coins + bonus;
@@ -201,8 +290,11 @@ function fluctuateAndMonitor() {
     trade.bonus = bonus;
     trade.totalCoinsChange = finalCoins;
 
-    // ---- USER WALLET UPDATE ----
+    // -------------------------------------------------
+    // 5️⃣ Update User Wallet + Stats
+    // -------------------------------------------------
     const user = users.find(u => u.id === trade.userId);
+
     if (user) {
       user.walletCoins += finalCoins;
       user.badgeLevel = getBadgeLevel(user.walletCoins);
@@ -214,12 +306,24 @@ function fluctuateAndMonitor() {
       trade.walletBalance = user.walletCoins;
     }
 
-    // move trade
-    const idx = trades.findIndex(t => t.id === trade.id);
-    if (idx !== -1) trades.splice(idx, 1);
+    // -------------------------------------------------
+    // 6️⃣ Move Trade to History
+    // -------------------------------------------------
+    const index = trades.findIndex(t => t.id === trade.id);
+    if (index !== -1) trades.splice(index, 1);
+
     history.push(trade);
   });
 }
+
+function getTotalFloatingPnL(userId) {
+  return trades
+    .filter(t => t.userId == userId && t.status === "active")
+    .reduce((total, trade) => {
+      return total + (Number(trade.floatingPnL) || 0);
+    }, 0);
+}
+
 
 
 
@@ -392,7 +496,7 @@ module.exports = {
   removeFromWatchlist,
 
   users,
-
+getTotalFloatingPnL,
   generateOTP,
   verifyOTP,
   getBadgeLevel,

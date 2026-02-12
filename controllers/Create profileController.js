@@ -1,5 +1,5 @@
 // controllers/profileController.js
-const { getUserById } = require('../data/inMemoryStore');
+const { getUserById, getTotalFloatingPnL } = require('../data/inMemoryStore');
 
 // badge logic
 function getBadgeLevel(coins) {
@@ -19,6 +19,7 @@ function getProfile(req, res) {
 
   // always recalculate badge
   const badgeLevel = getBadgeLevel(user.walletCoins);
+  const floatingPnL = getTotalFloatingPnL(userId);
 
   return res.json({
     id: user.id,
@@ -26,7 +27,8 @@ function getProfile(req, res) {
     walletCoins: user.walletCoins,
     badgeLevel,
     joinedAt: user.joinedAt,
-    stats: user.stats
+    stats: user.stats,
+    floatingPnL
   });
 }
 
