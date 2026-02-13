@@ -18,6 +18,7 @@ function getPopular(req, res) {
   { stockId: 'RELI', name: 'Reliance Industries' },
   { stockId: 'HDFC', name: 'HDFC Bank' },
   { stockId: 'ICICI', name: 'ICICI Bank' },
+    { stockId: 'BTC', name: 'Bitcoin' },
 
 
 ].map(s => ({

@@ -5,7 +5,7 @@ const { getSheetPrice } = require('./priceFeed');
    STOCKS
 --------------------------------------------------------- */
 const stocks = [
-    {
+  {
     id: 'NIFTY',
     name: 'NIFTY 50',
     exchange: 'NSE',
@@ -20,15 +20,22 @@ const stocks = [
     price: 62000.00,
     sector: 'Commodity'
   },
+
+  {
+    id: 'BTC',
+    name: 'Bitcoin',
+    exchange: 'CRYPTO',
+    price: 430000.00, // example INR price
+    sector: 'Cryptocurrency'
+  },
+
   { id: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
   { id: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
   { id: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
   { id: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
-  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' },
-
-  
-
+  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' }
 ];
+
 
 
 
@@ -52,7 +59,8 @@ const livePrices = {
   HDFC: 1600,
   ICICI: 950,
   NIFTY:19500,
-  GOLD:62000
+  GOLD:62000,
+  BTC:430000
 };
 
 
