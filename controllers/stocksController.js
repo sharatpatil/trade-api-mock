@@ -11,6 +11,7 @@ function getPopular(req, res) {
   const popular = [
 
       // 🟡 Commodity & Index
+  { stockId: 'BTC', name: 'Bitcoin' },
   { stockId: 'GOLD', name: 'Gold Futures' },
   { stockId: 'NIFTY', name: 'NIFTY 50' },
   { stockId: 'INFY', name: 'Infosys Ltd' },
@@ -18,7 +19,7 @@ function getPopular(req, res) {
   { stockId: 'RELI', name: 'Reliance Industries' },
   { stockId: 'HDFC', name: 'HDFC Bank' },
   { stockId: 'ICICI', name: 'ICICI Bank' },
-    { stockId: 'BTC', name: 'Bitcoin' },
+ 
 
 
 ].map(s => ({
