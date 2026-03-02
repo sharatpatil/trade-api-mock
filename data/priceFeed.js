@@ -1,21 +1,6 @@
 const axios = require('axios');
 const stocks = [
-  {
-    id: 'NIFTY',
-    name: 'NIFTY 50',
-    exchange: 'NSE',
-    price: 19500.00,
-    sector: 'Index'
-  },
-  
-  {
-    id: 'GOLD',
-    name: 'Gold Futures',
-    exchange: 'MCX',
-    price: 62000.00,
-    sector: 'Commodity'
-  },
-
+ 
   {
     id: 'BTC',
     name: 'Bitcoin',
@@ -25,10 +10,7 @@ const stocks = [
   },
 
   { id: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
-  { id: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
-  { id: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
-  { id: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
-  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' }
+ 
 ];
 
 
@@ -72,7 +54,7 @@ async function refreshMarketPrices() {
 
       let apiSymbol = symbol;
       let livePrice = null;
-     
+
       // 🔹 Internal → API Mapping
       if (symbol === "RELI") apiSymbol = "RELIANCE";
       if (symbol === "HDFC") apiSymbol = "HDFCBANK";
@@ -80,7 +62,7 @@ async function refreshMarketPrices() {
       if (symbol === "NIFTY") apiSymbol = "^NSEI";
       if (symbol === "TCS") apiSymbol = "TCS";
 
-
+      console.log(apiSymbol)
       // 🔹 BTC (Crypto)
       if (symbol === "BTC") {
         const btcRes = await axios.get(
@@ -92,6 +74,7 @@ async function refreshMarketPrices() {
           `https://api.twelvedata.com/price?symbol=${apiSymbol}&exchange=NSE&apikey=${API_KEY}`
         );
 
+        console.log(response)
         if (response.data.price) {
           livePrice = Number(Number(response.data.price).toFixed(2));
         }
@@ -107,7 +90,7 @@ async function refreshMarketPrices() {
     return marketPrices;
 
   } catch (err) {
-    console.error("Failed to refresh market prices:", err.response?.data || err.message);
+   console.error(`Failed for symbol ${symbol}:`, err.response?.data || err.message);
     throw err;
   }
 }
