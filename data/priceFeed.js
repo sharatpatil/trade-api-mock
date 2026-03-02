@@ -68,7 +68,9 @@ async function refreshMarketPrices() {
         const btcRes = await axios.get(
           "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=inr"
         );
+         console.log(btcRes)
         livePrice = btcRes.data.bitcoin.inr;
+       
       } else {
         const response = await axios.get(
           `https://api.twelvedata.com/price?symbol=${apiSymbol}&exchange=NSE&apikey=${API_KEY}`
