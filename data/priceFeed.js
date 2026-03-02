@@ -93,7 +93,7 @@ async function refreshMarketPrices() {
         );
 
         if (response.data.price) {
-          livePrice = Number(response.data.price);
+          livePrice = Number(Number(response.data.price).toFixed(2));
         }
       }
 
