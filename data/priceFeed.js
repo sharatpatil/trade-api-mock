@@ -65,11 +65,11 @@ async function refreshMarketPrices() {
       console.log(apiSymbol)
       // 🔹 BTC (Crypto)
       if (symbol === "BTC") {
-        const btcRes = await axios.get(
-          "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=inr"
-        );
-         console.log(btcRes)
-        livePrice = btcRes.data.bitcoin.inr;
+        // const btcRes = await axios.get(
+        //   "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=inr"
+        // );
+        //  console.log(btcRes)
+        // livePrice = btcRes.data.bitcoin.inr;
        
       } else {
         const response = await axios.get(
