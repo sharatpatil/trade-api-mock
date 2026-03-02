@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { getSheetPrice } = require('./priceFeed');
+const { getSheetPrice, getMarketPrice } = require('./priceFeed');
 
 /* ---------------------------------------------------------
    STOCKS
@@ -132,6 +132,15 @@ function getLivePrice(symbol) {
     
     return sheetPrice;
   }
+
+
+  const marketPrice = getMarketPrice(symbol);
+
+  if (marketPrice !== null) {
+    
+    return marketPrice;
+  }
+
 
   // ✅ 2. Simulated price for others
   if (!livePrices[symbol]) {

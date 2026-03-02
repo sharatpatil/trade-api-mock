@@ -1,6 +1,8 @@
 const {
   refreshSheetPrices,
-  getAllSheetPrices
+  getAllSheetPrices,
+  refreshLiveMarketPrices,
+  refreshMarketPrices
 } = require('../data/priceFeed');
 
 /**
@@ -21,6 +23,23 @@ async function refresh(req, res) {
   }
 }
 
+
+async function refreshLiveMarket(req, res) {
+  try {
+    const prices = await refreshMarketPrices();
+    res.json({
+      message: 'Prices refreshed successfully',
+      prices,
+      lastUpdated: new Date()
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'Failed to refresh prices'
+    });
+  }
+}
+
+
 /**
  * GET /api/prices
  */
@@ -31,5 +50,6 @@ function getAll(req, res) {
 
 module.exports = {
   refresh,
-  getAll
+  getAll,
+  refreshLiveMarket
 };
