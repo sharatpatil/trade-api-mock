@@ -4,38 +4,97 @@ const { getSheetPrice, getMarketPrice } = require('./priceFeed');
 /* ---------------------------------------------------------
    STOCKS
 --------------------------------------------------------- */
-const stocks = [
-  {
-    id: 'NIFTY',
-    name: 'NIFTY 50',
-    exchange: 'NSE',
-    price: 19500.00,
-    sector: 'Index'
-  },
+// const stocks = [
+//   {
+//     id: 'NIFTY',
+//     name: 'NIFTY 50',
+//     exchange: 'NSE',
+//     price: 19500.00,
+//     sector: 'Index'
+//   },
   
+//   {
+//     id: 'GOLD',
+//     name: 'Gold Futures',
+//     exchange: 'MCX',
+//     price: 62000.00,
+//     sector: 'Commodity'
+//   },
+
+//   {
+//     id: 'BTC',
+//     name: 'Bitcoin',
+//     exchange: 'CRYPTO',
+//     price: 430000.00, // example INR price
+//     sector: 'Cryptocurrency'
+//   },
+
+//   { id: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
+//   { id: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
+//   { id: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
+//   { id: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
+//   { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' }
+// ];
+
+
+const stocks =  [
   {
-    id: 'GOLD',
-    name: 'Gold Futures',
-    exchange: 'MCX',
-    price: 62000.00,
-    sector: 'Commodity'
+    "id": "NIFTY",
+    "name": "NIFTY 50",
+    "exchange": "NSE",
+    "price": 22485.65,
+    "sector": "Index"
   },
-
   {
-    id: 'BTC',
-    name: 'Bitcoin',
-    exchange: 'CRYPTO',
-    price: 430000.00, // example INR price
-    sector: 'Cryptocurrency'
+    "id": "GOLD",
+    "name": "Gold Futures",
+    "exchange": "MCX",
+    "price": 67320.40,
+    "sector": "Commodity"
   },
-
-  { id: 'INFY', name: 'Infosys Ltd', exchange: 'NSE', price: 1450.00, sector: 'IT' },
-  { id: 'TCS', name: 'Tata Consultancy Services', exchange: 'NSE', price: 3300.75, sector: 'IT' },
-  { id: 'RELI', name: 'Reliance Industries', exchange: 'NSE', price: 2600.50, sector: 'Energy' },
-  { id: 'HDFC', name: 'HDFC Bank', exchange: 'NSE', price: 1250.10, sector: 'Finance' },
-  { id: 'ICICI', name: 'ICICI Bank', exchange: 'NSE', price: 920.45, sector: 'Finance' }
-];
-
+  {
+    "id": "BTC",
+    "name": "Bitcoin",
+    "exchange": "CRYPTO",
+    "price": 6368037.00,
+    "sector": "Cryptocurrency"
+  },
+  {
+    "id": "INFY",
+    "name": "Infosys Ltd",
+    "exchange": "NSE",
+    "price": 1288.90,
+    "sector": "IT"
+  },
+  {
+    "id": "TCS",
+    "name": "Tata Consultancy Services",
+    "exchange": "NSE",
+    "price": 4032.75,
+    "sector": "IT"
+  },
+  {
+    "id": "RELI",
+    "name": "Reliance Industries",
+    "exchange": "NSE",
+    "price": 2954.60,
+    "sector": "Energy"
+  },
+  {
+    "id": "HDFC",
+    "name": "HDFC Bank",
+    "exchange": "NSE",
+    "price": 1682.35,
+    "sector": "Finance"
+  },
+  {
+    "id": "ICICI",
+    "name": "ICICI Bank",
+    "exchange": "NSE",
+    "price": 1124.55,
+    "sector": "Finance"
+  }
+]
 
 
 
@@ -53,14 +112,14 @@ const history = [];
 const watchlist = [];
 
 const livePrices = {
-  INFY: 1500,
-  TCS: 3550,
-  RELI: 2400,
-  HDFC: 1600,
-  ICICI: 950,
-  NIFTY:19500,
-  GOLD:62000,
-  BTC:430000
+  INFY: 1288.90,
+  TCS: 4032.75,
+  RELI: 2954.60,
+  HDFC: 1682.35,
+  ICICI: 1124.55,
+  NIFTY: 22485.65,
+  GOLD: 67320.40,
+  BTC: 6368037.00
 };
 
 
