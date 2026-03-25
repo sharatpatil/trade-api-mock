@@ -42,6 +42,7 @@ let lastUpdated = null;
 
 // Fetch prices from SheetDB
 async function refreshSheetPrices() {
+  console.log('Refreshing SheetDB prices...');
   try {
     const res = await axios.get(SHEETDB_URL);
 
@@ -58,6 +59,12 @@ async function refreshSheetPrices() {
     throw err;
   }
 }
+
+
+// run every 2 seconds
+setInterval(() => {
+  refreshSheetPrices();
+}, 2000);
 
 const API_KEY = `8949d8cf48874f73a18063d28b4b022c`;
 
