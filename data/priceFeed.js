@@ -34,7 +34,7 @@ const stocks = [
 
 
 
-const SHEETDB_URL = 'https://sheetdb.io/api/v1/5bzdefpayyzl1';
+const SHEETDB_URL = 'https://sheetdb.io/api/v1/odmg8g0rdk4mh';
 
 // in-memory cache
 const sheetPrices = {};
