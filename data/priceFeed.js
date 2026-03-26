@@ -62,9 +62,9 @@ async function refreshSheetPrices() {
 
 
 // run every 2 seconds
-setInterval(() => {
-  refreshSheetPrices();
-}, 2000);
+// setInterval(() => {
+//   refreshSheetPrices();
+// }, 20000);
 
 const API_KEY = `8949d8cf48874f73a18063d28b4b022c`;
 
