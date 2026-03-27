@@ -413,7 +413,7 @@ function getTotalFloatingPnL(userId) {
     .reduce((sum, trade) => {
       const live = getLivePrice(trade.stockId);
       const priceDiff = live - trade.entryPrice;
-      let pnl = priceDiff * trade.qty;
+      let pnl = priceDiff;
 
       if (trade.side === "SELL") {
         pnl = -pnl;
