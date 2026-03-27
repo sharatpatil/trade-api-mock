@@ -411,10 +411,18 @@ function getTotalFloatingPnL(userId) {
   const total = trades
     .filter(t => t.userId == userId && t.status === "active")
     .reduce((sum, trade) => {
-      return sum + (Number(trade.floatingPnL) || 0);
+      const live = getLivePrice(trade.stockId);
+      const priceDiff = live - trade.entryPrice;
+      let pnl = priceDiff * trade.qty;
+
+      if (trade.side === "SELL") {
+        pnl = -pnl;
+      }
+
+      return sum + pnl;
     }, 0);
 
-  return Math.round(total);
+  return Number(total.toFixed(2));
 }
 
 
