@@ -1,5 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
-const { getSheetPrice, getMarketPrice } = require('./priceFeed');
+const { 
+  getSheetPrice, 
+  getMarketPrice
+} = require('./priceFeed');
 
 /* ---------------------------------------------------------
    STOCKS
@@ -218,19 +221,22 @@ function getBadgeLevel(coins) {
 function getLivePrice(symbol) {
   symbol = symbol.toUpperCase();
 
-  const sheetPrice = getSheetPrice(symbol);
+  // 1️⃣ Try TwelveData first (PRIMARY - Live NSE Market Prices)
+  const marketPrice = getMarketPrice(symbol);
+  if (marketPrice !== null) {
+    return marketPrice;
+  }
 
+  // 2️⃣ Try SheetDB as fallback (if enabled)
+  const sheetPrice = getSheetPrice(symbol);
   if (sheetPrice !== null) {
     return sheetPrice;
   }
 
-  console.warn(`Price not found for ${symbol} in SheetDB`);
-
-  return 0; // safe fallback
+  // ❌ NO RANDOM PRICES - Return 0 if live price not available
+  console.warn(`⚠️  No live price available for ${symbol}`);
+  return 0;
 }
-
-setInterval(fluctuateAndMonitor, 3000);
-
 
 /* ---------------------------------------------------------
    PLACE TRADE

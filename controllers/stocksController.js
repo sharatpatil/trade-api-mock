@@ -1,13 +1,16 @@
 const { stocks } = require('../data/inMemoryStore');
 const { getPriceFromNSC } = require('../config/nscApi');
 const { getLivePrice } = require('../data/inMemoryStore');
+const { refreshMarketPrices } = require('../data/priceFeed');
 
 
 /**
  * GET /api/stocks/popular
  * returns a small list of "popular" stocks (mock).
  */
-function getPopular(req, res) {
+async function getPopular(req, res) {
+  await refreshMarketPrices();
+
   const popular = [
 
       // 🟡 Commodity & Index
@@ -34,7 +37,9 @@ function getPopular(req, res) {
 /**
  * GET /api/stocks/search?q=
  */
-function searchStocks(req, res) {
+async function searchStocks(req, res) {
+  await refreshMarketPrices();
+
   const q = (req.query.q || '').trim().toLowerCase();
   if (!q) return res.json({ results: [] });
   const results = stocks.filter(s =>
@@ -50,6 +55,8 @@ function searchStocks(req, res) {
  */
 async function stockDetails(req, res) {
   try {
+    await refreshMarketPrices();
+
     const id = (req.params.id || '').toUpperCase();
     const found = stocks.find(s => s.id === id);
     if (!found) return res.status(404).json({ error: 'Stock not found' });
