@@ -6,7 +6,6 @@ const {
   getLivePrice,
   getUserById 
 } = require('../data/inMemoryStore');
-const { refreshMarketPrices } = require('../data/priceFeed');
 
 // Utility: Extract userId safely
 function extractUserId(req) {
@@ -60,14 +59,12 @@ function place(req, res) {
 /**
  * GET /api/trades/active
  */
-async function getActive(req, res) {
+function getActive(req, res) {
   const userId = extractUserId(req);
   if (!userId) return res.status(400).json({ error: "userId is required" });
 
   const user = getUserById(userId);
   if (!user) return res.status(404).json({ error: "User not found" });
-
-  await refreshMarketPrices();
 
   const activeTrades = trades
     .filter(t => t.userId === userId)
