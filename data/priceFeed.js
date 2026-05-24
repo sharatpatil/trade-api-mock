@@ -130,7 +130,16 @@ const YAHOO_SYMBOL_MAPPING = {
   BTC: process.env.YAHOO_SYMBOL_BTC || 'BTC-INR'
 };
 
-const YAHOO_FIRST_SYMBOLS = new Set(['BTC']);
+const YAHOO_FIRST_SYMBOLS = new Set([
+  'NIFTY',
+  'INFY',
+  'TCS',
+  'RELI',
+  'HDFC',
+  'ICICI',
+  'GOLD',
+  'BTC'
+]);
 const GOLD_TROY_OUNCE_GRAMS = 31.1034768;
 const GOLD_PRICE_GRAMS = 10;
 
@@ -160,20 +169,43 @@ function getFinnhubQuote(symbol) {
 }
 
 async function getYahooQuote(symbol) {
-  const response = await axios.get(
-    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`,
-    {
-      params: {
-        range: '1d',
-        interval: '1m'
-      },
-      timeout: 8000
-    }
-  );
+  const hosts = [
+    'https://query1.finance.yahoo.com',
+    'https://query2.finance.yahoo.com'
+  ];
 
-  const meta = response.data?.chart?.result?.[0]?.meta;
-  const price = meta?.regularMarketPrice || meta?.previousClose;
-  return Number(price);
+  let lastError = null;
+
+  for (const host of hosts) {
+    try {
+      const response = await axios.get(
+        `${host}/v8/finance/chart/${encodeURIComponent(symbol)}`,
+        {
+          params: {
+            range: '1d',
+            interval: '1m'
+          },
+          headers: {
+            Accept: 'application/json,text/plain,*/*',
+            'User-Agent': 'Mozilla/5.0'
+          },
+          timeout: 10000
+        }
+      );
+
+      const meta = response.data?.chart?.result?.[0]?.meta;
+      const price = meta?.regularMarketPrice || meta?.previousClose;
+      if (Number(price) > 0) {
+        return Number(price);
+      }
+
+      lastError = new Error(`Yahoo returned no price for ${symbol}`);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error(`Yahoo quote failed for ${symbol}`);
 }
 
 async function getUsdInrRate() {
